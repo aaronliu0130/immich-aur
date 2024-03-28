@@ -33,7 +33,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
 	"${pkgbase}.tmpfiles"
 	'immich.conf'
 	'nginx.immich.conf'
-        'media.util.ts.patch'
+        'media.ts.patch'
         # TODO at the moment, the latest version at install will be taken 
         # mirroring approach in docker base-image, however should we implement 
         # a simple service to keep these up-to-date since they appear to be
@@ -59,7 +59,7 @@ _venvdir="${_installdir}/venv"
 prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
     # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
-    patch -p0 -i "${srcdir}/media.util.ts.patch"
+    patch -p0 -i "${srcdir}/media.ts.patch"
 }
 
 build() {
