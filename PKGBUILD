@@ -49,10 +49,10 @@ sha256sums=('13f00122d97f75293d4b1ac3385d40ebf07278f3b14ac2c7898138d9cf446fbb'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
             '15c00108d970691a72397eab19ee784bbd24eae941307bb676ebf2f25d36057c'
             'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
-            'f1b2d41a238515e842faa0a48143c263dcde76556974d9e26f28fa9a7091a2e6'
-            'SKIP'
-            'SKIP'
-            'SKIP')
+            '98913d01b965aaeaf84be21270cf57b74b9bc18bbb8f492212fbea58db2f81c1'
+            'a8d9d4fdeeb8904d8ff30850102413c49656b677f8ee072023d50d93b4f1f035'
+            'c086e7add91c4067e53a4c21b580e933d7c0662c698aecd7bfd6069f42a8170b'
+            '5c249302d3592d5a9f887b762dedc8cf6fc7c8acd6b92ea9ab141071834f28ef')
 _installdir=/opt/immich-machine-learning
 _venvdir="${_installdir}/venv"
 
