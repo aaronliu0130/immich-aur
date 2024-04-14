@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
+pkgrel=2
 pkgver=1.101.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
@@ -14,7 +14,7 @@ makedepends=('npm' 'jq' 'python-poetry' 'ts-node')
 # for individual deps and commentary
 depends=('redis' 'postgresql' 'nodejs'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
-    'libwebp' 'orc' 'libjpeg-turbo' 'libgsf' 'libpng'
+    'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libjxl' 'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
     'openexr' 'liblqr' 'libtool' 'ffmpeg'
     'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
@@ -125,6 +125,7 @@ package_immich-server() {
 
     # dependencies generated from base-images repository
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
+    # 1.101.0-2: liborc dep found to be not required
     depends=('redis' 'postgresql' 'nodejs'
         'pgvecto.rs=0.2.0'  # aur
         'zlib'
@@ -133,7 +134,6 @@ package_immich-server() {
         'librsvg'
         'libexif'
         'libwebp'
-        'orc'
         'libjpeg-turbo'
         'libgsf'
         'libpng'
