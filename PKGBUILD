@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
+pkgrel=2
 pkgver=1.102.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
