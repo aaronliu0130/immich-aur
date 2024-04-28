@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=2
+pkgrel=3
 pkgver=1.102.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
@@ -12,7 +12,7 @@ arch=(x86_64)
 makedepends=('npm' 'jq' 'python-poetry' 'ts-node')
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
-depends=('redis' 'postgresql' 'nodejs'
+depends=('redis' 'postgresql' 'nodejs' 'python>=3.10' 'python<3.12'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libjxl' 'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
@@ -104,7 +104,13 @@ build() {
     export PIP_NO_CACHE_DIR=true
     poetry config installer.max-workers 10
     poetry config virtualenvs.create false
-    python -m venv "${srcdir}/venv"
+    if [ -f /usr/bin/python3.11 ]; then
+        python3.11 -m venv "${srcdir}/venv"
+    elif [ -f /usr/bin/python3.10 ]; then
+        python3.10 -m venv "${srcdir}/venv"
+    else
+        python -m venv "${srcdir}/venv"
+    fi
     export VIRTUAL_ENV="${srcdir}/venv"
     export PATH="${srcdir}/venv/bin:${PATH}"
     poetry install --sync --no-interaction --no-ansi --no-root --with cpu --without dev
@@ -129,6 +135,8 @@ package_immich-server() {
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
     # 1.101.0-2: liborc dep found to be not required
     depends=('redis' 'postgresql' 'nodejs'
+        # mirror machine-learning/pyproject.toml requirement
+        'python>=3.10' 'python<3.12'
         'pgvecto.rs=0.2.0'  # aur
         'zlib'
         'glib2'

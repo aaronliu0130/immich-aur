@@ -1,7 +1,7 @@
 pkgbase = immich
 	pkgdesc = Self-hosted photos and videos backup tool
 	pkgver = 1.102.3
-	pkgrel = 1
+	pkgrel = 3
 	url = https://github.com/immich-app/immich
 	arch = x86_64
 	license = MIT
@@ -12,6 +12,8 @@ pkgbase = immich
 	depends = redis
 	depends = postgresql
 	depends = nodejs
+	depends = python>=3.10
+	depends = python<3.12
 	depends = pgvecto.rs=0.2.0
 	depends = zlib
 	depends = glib2
@@ -84,6 +86,8 @@ pkgname = immich-server
 	depends = redis
 	depends = postgresql
 	depends = nodejs
+	depends = python>=3.10
+	depends = python<3.12
 	depends = pgvecto.rs=0.2.0
 	depends = zlib
 	depends = glib2
