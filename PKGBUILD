@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
-pkgver=1.105.1
+pkgrel=5
+pkgver=1.106.4
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -12,7 +12,7 @@ arch=(x86_64)
 makedepends=('npm' 'jq' 'python-poetry' 'ts-node')
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
-depends=('redis' 'postgresql' 'nodejs' 'python>=3.10' 'python<3.12'
+depends=('redis' 'postgresql' 'nodejs'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libjxl' 'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
@@ -34,6 +34,8 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
 	'immich.conf'
 	'nginx.immich.conf'
         'media.ts.patch'
+        'pyproject.toml.patch'
+        'poetry.lock.patch'
         # TODO at the moment, the latest version at install will be taken 
         # mirroring approach in docker base-image, however should we implement 
         # a simple service to keep these up-to-date since they appear to be
@@ -41,15 +43,17 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/cities500.zip'
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt')
-sha256sums=('1e38ee3329bc3e20c94b8bb5daa30741479bcca7ef7bf7353b458fcb9ddb376d'
+sha256sums=('3655cc78287d9a350f51c8913018dbe92d9c6501b1f4d72ce58bd6d9a9308841'
             '0a9d7fffe3c301190cc8581ee7e11417eb0661937a2c03d76c8b8bc39710205b'
             'dc1a3d7baf2ec4f00a4a80f88a1f28dc1092eb7a08195544cc37b6532777f5d7'
             'd20455349cdb9409adb42cdbde48c30a176d2a5337ad148c6d2227ecc523c88a'
             '01707746e8718fe169b729b7b3d9e26e870bf2dbc4d1f6cdc7ed7d3839e92c0e'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
-            '1f0ec768f68718dd44fc49cf035297e8dc49e098e3aac8f958a46bda6d4ef42d'
+            '229763268959149a55a884da148aefe913387b655054af59b44ea217aa40e4b9'
             'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
-            '34ebbbf4a39c79ce9efab68f7d2ee4b4fb27d33dc9b961fbd9a13ba964110f3d'
+            '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
+            '8b74b1f75d872fbdf5490bfc5b29268622b391541f823ce5dd692b86fbe27972'
+            'abba8b6caae5ec4ccfd152838e08efc2122bf77eda205c2e28ca5993fb8357bf'
             'SKIP'
             'SKIP'
             'SKIP')
@@ -60,6 +64,10 @@ prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
     # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
     patch -p0 -i "${srcdir}/media.ts.patch"
+    # use lock files from the upstream PR #10481 (https://github.com/immich-app/immich/pull/10481/files)
+    # to allow python 3.12 to be used in advance of next release
+    patch -p0 -i "${srcdir}/pyproject.toml.patch"
+    patch -p0 -i "${srcdir}/poetry.lock.patch"
 }
 
 build() {
@@ -104,13 +112,7 @@ build() {
     export PIP_NO_CACHE_DIR=true
     poetry config installer.max-workers 10
     poetry config virtualenvs.create false
-    if [ -f /usr/bin/python3.11 ]; then
-        python3.11 -m venv "${srcdir}/venv"
-    elif [ -f /usr/bin/python3.10 ]; then
-        python3.10 -m venv "${srcdir}/venv"
-    else
-        python -m venv "${srcdir}/venv"
-    fi
+    python -m venv "${srcdir}/venv"
     export VIRTUAL_ENV="${srcdir}/venv"
     export PATH="${srcdir}/venv/bin:${PATH}"
     poetry install --sync --no-interaction --no-ansi --no-root --with cpu --without dev
@@ -136,7 +138,6 @@ package_immich-server() {
     # 1.101.0-2: liborc dep found to be not required
     depends=('redis' 'postgresql' 'nodejs'
         # mirror machine-learning/pyproject.toml requirement
-        'python>=3.10' 'python<3.12'
         'pgvecto.rs=0.2.0'  # aur
         'zlib'
         'glib2'
@@ -192,6 +193,8 @@ package_immich-server() {
         'mesa-utils: GPU acceleration'
         'vulkan-driver: Vulkan support'
         'nginx: Reverse proxy'
+        'intel-compute-runtime: OpenCL support'
+        'intel-media-driver: HW acceleration'
     )
 
     cd "${srcdir}/${pkgbase}-${pkgver}"
