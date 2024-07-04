@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=5
-pkgver=1.106.4
+pkgrel=1
+pkgver=1.107.2
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -34,8 +34,6 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
 	'immich.conf'
 	'nginx.immich.conf'
         'media.ts.patch'
-        'pyproject.toml.patch'
-        'poetry.lock.patch'
         # TODO at the moment, the latest version at install will be taken 
         # mirroring approach in docker base-image, however should we implement 
         # a simple service to keep these up-to-date since they appear to be
@@ -43,7 +41,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/cities500.zip'
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt')
-sha256sums=('3655cc78287d9a350f51c8913018dbe92d9c6501b1f4d72ce58bd6d9a9308841'
+sha256sums=('99be31d0ec09d4c29b28449fa8e008c6861ff4a6d3a04488dc480a210e2e870a'
             '0a9d7fffe3c301190cc8581ee7e11417eb0661937a2c03d76c8b8bc39710205b'
             'dc1a3d7baf2ec4f00a4a80f88a1f28dc1092eb7a08195544cc37b6532777f5d7'
             'd20455349cdb9409adb42cdbde48c30a176d2a5337ad148c6d2227ecc523c88a'
@@ -52,8 +50,6 @@ sha256sums=('3655cc78287d9a350f51c8913018dbe92d9c6501b1f4d72ce58bd6d9a9308841'
             '229763268959149a55a884da148aefe913387b655054af59b44ea217aa40e4b9'
             'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
             '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
-            '8b74b1f75d872fbdf5490bfc5b29268622b391541f823ce5dd692b86fbe27972'
-            'abba8b6caae5ec4ccfd152838e08efc2122bf77eda205c2e28ca5993fb8357bf'
             'SKIP'
             'SKIP'
             'SKIP')
@@ -64,10 +60,6 @@ prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
     # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
     patch -p0 -i "${srcdir}/media.ts.patch"
-    # use lock files from the upstream PR #10481 (https://github.com/immich-app/immich/pull/10481/files)
-    # to allow python 3.12 to be used in advance of next release
-    patch -p0 -i "${srcdir}/pyproject.toml.patch"
-    patch -p0 -i "${srcdir}/poetry.lock.patch"
 }
 
 build() {
