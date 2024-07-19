@@ -2,14 +2,14 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
-pkgver=1.107.2
+pkgrel=5
+pkgver=1.109.2
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
 arch=(x86_64)
 # ts-node required for CLI
-makedepends=('npm' 'jq' 'python-poetry' 'ts-node')
+makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
 depends=('redis' 'postgresql' 'nodejs'
@@ -24,8 +24,10 @@ depends=('redis' 'postgresql' 'nodejs'
     'perl-test-needs' 'perl-test2-suite' 'perl-sort-versions'
     'perl-path-tiny' 'perl-try-tiny' 'perl-term-table'
     'perl-uri' 'perl-mojolicious' 'perl-file-slurper'
+    'libde265' 'dav1d'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
+        "base-images::git+https://github.com/immich-app/base-images"
 	"${pkgbase}-server.service"
 	"${pkgbase}-microservices.service"
 	"${pkgbase}-machine-learning.service"
@@ -41,13 +43,14 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/cities500.zip'
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt')
-sha256sums=('99be31d0ec09d4c29b28449fa8e008c6861ff4a6d3a04488dc480a210e2e870a'
-            '0a9d7fffe3c301190cc8581ee7e11417eb0661937a2c03d76c8b8bc39710205b'
-            'dc1a3d7baf2ec4f00a4a80f88a1f28dc1092eb7a08195544cc37b6532777f5d7'
-            'd20455349cdb9409adb42cdbde48c30a176d2a5337ad148c6d2227ecc523c88a'
+sha256sums=('c45bed3fa510d51df6e31e7bbf06bda3413aa4ef751d9c6d7596ffc49b921459'
+            'SKIP'
+            '17cb64654e8003dae2d69e523509be6a242d9eafb3a1445814a5cef232ba71fa'
+            'afd1a11b527f8a56dcf55f517737b7b715dd187953d9bb1a5bc439968ce41c61'
+            '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
             '01707746e8718fe169b729b7b3d9e26e870bf2dbc4d1f6cdc7ed7d3839e92c0e'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
-            '229763268959149a55a884da148aefe913387b655054af59b44ea217aa40e4b9'
+            '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
             'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
             '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
             'SKIP'
@@ -60,6 +63,14 @@ prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
     # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
     patch -p0 -i "${srcdir}/media.ts.patch"
+
+    imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | sed 's/^\(.\{4\}\)\(.\{2\}\)/\1-\2-/')
+    echo "DEBUG imgdate: $imgdate"
+    cd "${srcdir}/base-images"
+    imgcommit=$(git log -n1 --no-color --before="$1" | head -n1 | cut -d' ' -f2)
+    echo "DEBUG imgcommit: $imgcommit"
+    git checkout "$imgcommit"
+    
 }
 
 build() {
@@ -176,6 +187,9 @@ package_immich-server() {
         'perl-uri'  # good enough for libany-uri-escape-perl?
         'perl-mojolicious'  # aur
         'perl-file-slurper'
+        # added v1.108
+        'libde265'
+        'dav1d'
     )
     backup=("etc/immich.conf")
     options=("!strip")
@@ -203,7 +217,10 @@ package_immich-server() {
     install -Dm644 server/package-lock.json "${pkgdir}/usr/lib/immich/app/server/package-lock.json"
     install -Dm644 LICENSE "${pkgdir}/usr/lib/immich/app/LICENSE"
     cp -r server/resources "${pkgdir}/usr/lib/immich/app/server/resources"
-    cp -r web/build "${pkgdir}/usr/lib/immich/app/server/www"
+
+    # install www
+    install -dm755 "${pkgdir}/usr/lib/immich/build"
+    cp -r web/build "${pkgdir}/usr/lib/immich/build/www"
 
     # install machine-learning
     # from: machine-learning/Dockerfile COPY commands
@@ -218,11 +235,11 @@ package_immich-server() {
     
     # install reverse-geocoding data
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
-    install -dm750 "${pkgdir}/var/lib/immich-revgeo"
-    install -Dm640 cities500.txt "${pkgdir}/var/lib/immich-revgeo/cities500.txt"
-    install -Dm640 admin1CodesASCII.txt "${pkgdir}/var/lib/immich-revgeo/admin1CodesASCII.txt"
-    install -Dm640 admin2Codes.txt "${pkgdir}/var/lib/immich-revgeo/admin2Codes.txt"
-    date --iso-8601=seconds | tr -d "\n" > "${pkgdir}/var/lib/immich-revgeo/geodata-date.txt"
+    install -dm755 "${pkgdir}/usr/lib/immich/build/geodata"
+    install -Dm644 cities500.txt "${pkgdir}/usr/lib/immich/build/geodata/cities500.txt"
+    install -Dm644 admin1CodesASCII.txt "${pkgdir}/usr/lib/immich/build/geodata/admin1CodesASCII.txt"
+    install -Dm644 admin2Codes.txt "${pkgdir}/usr/lib/immich/build/geodata/admin2Codes.txt"
+    date --iso-8601=seconds | tr -d "\n" > "${pkgdir}/usr/lib/immich/build/geodata/geodata-date.txt"
 
     # install systemd service files
     install -Dm644 immich-server.service "${pkgdir}/usr/lib/systemd/system/immich-server.service"
@@ -234,6 +251,13 @@ package_immich-server() {
     install -Dm644 immich.tmpfiles "${pkgdir}/usr/lib/tmpfiles.d/immich.conf"
     install -Dm644 immich.conf "${pkgdir}/etc/immich.conf"
     install -Dm644 nginx.immich.conf "${pkgdir}/etc/nginx/sites-available/immich.conf"
+    
+    # install lock file (from base-images)
+    # TODO this lock file is used to determine versions for ffmpeg, libheif and others
+    # it will not reflect the arch installed versions but only other option is to have
+    # it generated dynamically on server start - do we need to do this?
+    cd "${srcdir}/base-images"
+    install -Dm644 server/bin/build-lock.json "${pkgdir}/usr/lib/immich/build/build-lock.json"
 }
 
 package_immich-cli() {

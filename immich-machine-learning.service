@@ -13,6 +13,8 @@ Restart=on-failure
 
 EnvironmentFile=/etc/immich.conf
 
+Environment=IMMICH_BUILD_DATA=/usr/lib/immich/build
+
 # environment variables
 # from: machine-learning/Dockerfile
 Environment=NODE_ENV=production
