@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=5
+pkgrel=6
 pkgver=1.109.2
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
@@ -64,11 +64,10 @@ prepare() {
     # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
     patch -p0 -i "${srcdir}/media.ts.patch"
 
+    # TODO possibly can checkout using date directly (commits are tagged with date)
     imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | sed 's/^\(.\{4\}\)\(.\{2\}\)/\1-\2-/')
-    echo "DEBUG imgdate: $imgdate"
     cd "${srcdir}/base-images"
     imgcommit=$(git log -n1 --no-color --before="$1" | head -n1 | cut -d' ' -f2)
-    echo "DEBUG imgcommit: $imgcommit"
     git checkout "$imgcommit"
     
 }
