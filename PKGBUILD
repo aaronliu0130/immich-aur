@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
-pkgver=1.110.0
+pkgrel=4
+pkgver=1.111.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -12,7 +12,7 @@ arch=(x86_64)
 makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
-depends=('redis' 'postgresql' 'nodejs'
+depends=('redis' 'postgresql' 'nodejs>=20'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libjxl' 'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
@@ -42,8 +42,9 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         # generated daily?
         'https://download.geonames.org/export/dump/cities500.zip'
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
-        'https://download.geonames.org/export/dump/admin2Codes.txt')
-sha256sums=('aceddfef934fcbea8c4e8c8069595bd2806bd758498f94be15c99ffbc2721ad3'
+        'https://download.geonames.org/export/dump/admin2Codes.txt'
+        'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
+sha256sums=('9f5c80314131301d5d877e5ddff0c531eda3233cd8e915791b6f404a4a248104'
             'SKIP'
             '17cb64654e8003dae2d69e523509be6a242d9eafb3a1445814a5cef232ba71fa'
             'afd1a11b527f8a56dcf55f517737b7b715dd187953d9bb1a5bc439968ce41c61'
@@ -53,6 +54,7 @@ sha256sums=('aceddfef934fcbea8c4e8c8069595bd2806bd758498f94be15c99ffbc2721ad3'
             '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
             'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
             '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
+            'SKIP'
             'SKIP'
             'SKIP'
             'SKIP')
@@ -138,7 +140,7 @@ package_immich-server() {
     # dependencies generated from base-images repository
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
     # 1.101.0-2: liborc dep found to be not required
-    depends=('redis' 'postgresql' 'nodejs'
+    depends=('redis' 'postgresql' 'nodejs>=20'
         # mirror machine-learning/pyproject.toml requirement
         'pgvecto.rs=0.2.0'  # aur
         'zlib'
@@ -238,6 +240,7 @@ package_immich-server() {
     install -Dm644 cities500.txt "${pkgdir}/usr/lib/immich/build/geodata/cities500.txt"
     install -Dm644 admin1CodesASCII.txt "${pkgdir}/usr/lib/immich/build/geodata/admin1CodesASCII.txt"
     install -Dm644 admin2Codes.txt "${pkgdir}/usr/lib/immich/build/geodata/admin2Codes.txt"
+    install -Dm644 ne_10m_admin_0_countries.geojson "${pkgdir}/usr/lib/immich/build/geodata/ne_10m_admin_0_countries.geojson"
     date --iso-8601=seconds | tr -d "\n" > "${pkgdir}/usr/lib/immich/build/geodata/geodata-date.txt"
 
     # install systemd service files
@@ -260,7 +263,7 @@ package_immich-server() {
 }
 
 package_immich-cli() {
-    depends=('nodejs')
+    depends=('nodejs>=20')
 
     cd "${srcdir}/${pkgbase}-${pkgver}/cli"
     install -dm755 "${pkgdir}/usr/lib/immich/cli"
