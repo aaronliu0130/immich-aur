@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.113.1
+pkgver=1.115.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -15,16 +15,10 @@ makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
 depends=('redis' 'postgresql' 'nodejs>=20'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
-    'libjxl' 'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
+    'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
     'openexr' 'liblqr' 'libtool' 'ffmpeg'
     'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
-    'libraw' 'perl-net-ssleay' 'perl-io-socket-ssl' 'perl-capture-tiny'
-    'perl-file-which' 'perl-file-chdir' 'perl-pkgconfig'
-    'perl-ffi-checklib' 'perl-test-warnings' 'perl-test-fatal'
-    'perl-test-needs' 'perl-test2-suite' 'perl-sort-versions'
-    'perl-path-tiny' 'perl-try-tiny' 'perl-term-table'
-    'perl-uri' 'perl-mojolicious' 'perl-file-slurper'
-    'libde265' 'dav1d'
+    'libraw' 'libde265' 'dav1d'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
         "base-images::git+https://github.com/immich-app/base-images"
@@ -44,7 +38,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('23f5cecc99cc6ef24d509875ba4301e4ecf50dbcd44b04f7ac1a416005dc55bc'
+sha256sums=('12f68584cb83593ebd4f39d259695ff32dcfc35a131e9c27fee799f0a95a6609'
             'SKIP'
             '17cb64654e8003dae2d69e523509be6a242d9eafb3a1445814a5cef232ba71fa'
             'afd1a11b527f8a56dcf55f517737b7b715dd187953d9bb1a5bc439968ce41c61'
@@ -152,7 +146,6 @@ package_immich-server() {
         'libjpeg-turbo'
         'libgsf'
         'libpng'
-        'libjxl'
         'libheif'
         'lcms2'
         'mimalloc'
@@ -169,25 +162,6 @@ package_immich-server() {
         'poppler-glib'
         'imagemagick'
         'libraw'
-        # new perl deps introduced at v1.89.0
-        'perl-net-ssleay'
-        'perl-io-socket-ssl'
-        'perl-capture-tiny'
-        'perl-file-which'
-        'perl-file-chdir'
-        'perl-pkgconfig'  # other potential - libpkgconf
-        'perl-ffi-checklib'
-        'perl-test-warnings'
-        'perl-test-fatal'
-        'perl-test-needs'
-        'perl-test2-suite'
-        'perl-sort-versions'
-        'perl-path-tiny'  # other potential - perl-file-path-tiny
-        'perl-try-tiny'
-        'perl-term-table'
-        'perl-uri'  # good enough for libany-uri-escape-perl?
-        'perl-mojolicious'  # aur
-        'perl-file-slurper'
         # added v1.108
         'libde265'
         'dav1d'
