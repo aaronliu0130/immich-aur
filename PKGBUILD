@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
-pkgver=1.117.0
+pkgrel=3
+pkgver=1.118.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -18,12 +18,11 @@ depends=('redis' 'postgresql' 'nodejs>=20'
     'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
     'openexr' 'liblqr' 'libtool' 'ffmpeg'
     'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
-    'libraw' 'libde265' 'dav1d'
+    'brotli' 'perl-io-compress-brotli' 'libraw' 'libde265' 'dav1d'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
         "base-images::git+https://github.com/immich-app/base-images"
 	"${pkgbase}-server.service"
-	"${pkgbase}-microservices.service"
 	"${pkgbase}-machine-learning.service"
 	"${pkgbase}.sysusers"
 	"${pkgbase}.tmpfiles"
@@ -38,15 +37,14 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('725499d412fa1c670ed267554e93ab1b24eabee8834cbda1e935315bad94ed72'
+sha256sums=('f774b209683b4b34d3009a95cad4f47400b5523a8f75d75f78f58cb9a166961c'
             'SKIP'
-            '17cb64654e8003dae2d69e523509be6a242d9eafb3a1445814a5cef232ba71fa'
-            'afd1a11b527f8a56dcf55f517737b7b715dd187953d9bb1a5bc439968ce41c61'
+            '51b7b234985bea3b4ed62710edb2f8ea1667a5f3887ccabb50d6ed595cbd58ee'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
             '01707746e8718fe169b729b7b3d9e26e870bf2dbc4d1f6cdc7ed7d3839e92c0e'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
             '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
-            'cc405c774e34cd161f00ccd882e66c2d2ce28405964bf62472ebc3f59d642060'
+            '28081014a8c410010df22e979c49c3af4a49815e2c6e4ee6090206e2381a56c6'
             '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
             'SKIP'
             'SKIP'
@@ -165,6 +163,9 @@ package_immich-server() {
         # added v1.108
         'libde265'
         'dav1d'
+        # added v1.118
+        'brotli'
+        'perl-io-compress-brotli'
     )
     backup=("etc/immich.conf")
     options=("!strip")
@@ -219,7 +220,6 @@ package_immich-server() {
 
     # install systemd service files
     install -Dm644 immich-server.service "${pkgdir}/usr/lib/systemd/system/immich-server.service"
-    install -Dm644 immich-microservices.service "${pkgdir}/usr/lib/systemd/system/immich-microservices.service"
     install -Dm644 immich-machine-learning.service "${pkgdir}/usr/lib/systemd/system/immich-machine-learning.service"
 
     # install configuration files
