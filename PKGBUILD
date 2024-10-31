@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.118.2
+pkgver=1.119.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -16,7 +16,7 @@ depends=('redis' 'postgresql' 'nodejs>=20'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
-    'openexr' 'liblqr' 'libtool' 'ffmpeg'
+    'openexr' 'liblqr' 'libtool' 'jellyfin-ffmpeg'
     'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
     'brotli' 'perl-io-compress-brotli' 'libraw' 'libde265' 'dav1d'
 )
@@ -37,7 +37,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('59856c9915ed1fb7f6c141cf104cd3d10c7a4c0e1139e25230f0167708f567ef'
+sha256sums=('671ae85fcbd2cc58996f05cd3ea473afeb2a9b280421402fe8b5644e83532317'
             'SKIP'
             '51b7b234985bea3b4ed62710edb2f8ea1667a5f3887ccabb50d6ed595cbd58ee'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -151,7 +151,7 @@ package_immich-server() {
         'openexr'
         'liblqr'
         'libtool'
-        'ffmpeg'
+        'jellyfin-ffmpeg'  # maintainer advice 28/10/24
         # need to ensure this matches sharp depend version
         # because otherwise a local copy will be built
         # breaking heif conversion
