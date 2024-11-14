@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.120.1
+pkgver=1.120.2
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -19,6 +19,7 @@ depends=('redis' 'postgresql' 'nodejs>=20'
     'openexr' 'liblqr' 'libtool' 'jellyfin-ffmpeg'
     'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
     'brotli' 'perl-io-compress-brotli' 'libraw' 'libde265' 'dav1d'
+    'highway'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
         "base-images::git+https://github.com/immich-app/base-images"
@@ -37,7 +38,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('982be7b4e0c29bfd18411ab1793057c63b4f3f9748cd8a7b3b28ba15bb4ea53d'
+sha256sums=('060f17746f220f7df122c2c374c26278b758d6f5483ea99058e5e7179f64fbb0'
             'SKIP'
             '51b7b234985bea3b4ed62710edb2f8ea1667a5f3887ccabb50d6ed595cbd58ee'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -166,6 +167,8 @@ package_immich-server() {
         # added v1.118
         'brotli'
         'perl-io-compress-brotli'
+        # added v1.120.2
+        'highway'
     )
     backup=("etc/immich.conf")
     options=("!strip")
