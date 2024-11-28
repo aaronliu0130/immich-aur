@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
+pkgrel=2
 pkgver=1.121.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
@@ -23,12 +23,12 @@ depends=('redis' 'postgresql' 'nodejs>=20'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
         "base-images::git+https://github.com/immich-app/base-images"
-	"${pkgbase}-server.service"
-	"${pkgbase}-machine-learning.service"
-	"${pkgbase}.sysusers"
-	"${pkgbase}.tmpfiles"
-	'immich.conf'
-	'nginx.immich.conf'
+        "${pkgbase}-server.service"
+        "${pkgbase}-machine-learning.service"
+        "${pkgbase}.sysusers"
+        "${pkgbase}.tmpfiles"
+        'immich.conf'
+        'nginx.immich.conf'
         'media.ts.patch'
         # TODO at the moment, the latest version at install will be taken 
         # mirroring approach in docker base-image, however should we implement 
@@ -229,7 +229,7 @@ package_immich-server() {
     install -Dm644 immich.sysusers "${pkgdir}/usr/lib/sysusers.d/immich.conf"
     install -Dm644 immich.tmpfiles "${pkgdir}/usr/lib/tmpfiles.d/immich.conf"
     install -Dm644 immich.conf "${pkgdir}/etc/immich.conf"
-    install -Dm644 nginx.immich.conf "${pkgdir}/etc/nginx/sites-available/immich.conf"
+    install -Dm644 nginx.immich.conf "${pkgdir}/usr/share/doc/immich/examples/nginx.conf"
     
     # install lock file (from base-images)
     # TODO this lock file is used to determine versions for ffmpeg, libheif and others
