@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=2
-pkgver=1.121.0
+pkgrel=1
+pkgver=1.122.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -29,7 +29,6 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         "${pkgbase}.tmpfiles"
         'immich.conf'
         'nginx.immich.conf'
-        'media.ts.patch'
         # TODO at the moment, the latest version at install will be taken 
         # mirroring approach in docker base-image, however should we implement 
         # a simple service to keep these up-to-date since they appear to be
@@ -38,7 +37,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('694b9c4b3a7a26541731c561ffa4c5d665e09d70204366b0c64446623f432a28'
+sha256sums=('eba5456527578963b0d34b24b23f6bf5d6f7015acb56eb3ea5fb22a09340824c'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -46,7 +45,6 @@ sha256sums=('694b9c4b3a7a26541731c561ffa4c5d665e09d70204366b0c64446623f432a28'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
             '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
             '28081014a8c410010df22e979c49c3af4a49815e2c6e4ee6090206e2381a56c6'
-            '7f9eb5503f61f77aaa14d93c7531dbb96fc2805484eb5b35464bb63bd0f544bc'
             'SKIP'
             'SKIP'
             'SKIP'
@@ -56,8 +54,6 @@ _venvdir="${_installdir}/venv"
 
 prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
-    # required to prefer /dev/dri/renderD128 over /dev/dri/card0 for ffmpeg accel (VAAPI)
-    patch -p0 -i "${srcdir}/media.ts.patch"
 
     # TODO possibly can checkout using date directly (commits are tagged with date)
     imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | sed 's/^\(.\{4\}\)\(.\{2\}\)/\1-\2-/')
