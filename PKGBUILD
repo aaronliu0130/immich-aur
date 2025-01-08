@@ -3,16 +3,22 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.123.0
+pkgver=1.124.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
 arch=(x86_64)
 # ts-node required for CLI
 makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
+
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
-depends=('redis' 'postgresql' 'nodejs>=20'
+
+# PYTHON V3.12 REQUIRED
+#   Current incompatibility with arch base version of python (3.13)
+#   so depend on python312. Cannot use python=3.12 since the AUR
+#   package does not contain a provides=.
+depends=('redis' 'postgresql' 'nodejs>=20' 'python312'
     'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
@@ -37,7 +43,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('fcb894b1516a1ab258ea942cda57ece44892900303b5d0c4cf9593a60aaab4b8'
+sha256sums=('79056c4ac3d809440534be72415110b47254981e8d53c680dd4e1aefe827fda5'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -105,7 +111,7 @@ build() {
     export PIP_NO_CACHE_DIR=true
     poetry config installer.max-workers 10
     poetry config virtualenvs.create false
-    python -m venv "${srcdir}/venv"
+    python3.12 -m venv "${srcdir}/venv"
     export VIRTUAL_ENV="${srcdir}/venv"
     export PATH="${srcdir}/venv/bin:${PATH}"
     poetry install --sync --no-interaction --no-ansi --no-root --with cpu --without dev
@@ -130,7 +136,7 @@ package_immich-server() {
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
     # 1.101.0-2: liborc dep found to be not required
     depends=('redis' 'postgresql' 'nodejs>=20'
-        # mirror machine-learning/pyproject.toml requirement
+        'python312'
         'pgvecto.rs=0.2.0'  # aur
         'zlib'
         'glib2'
