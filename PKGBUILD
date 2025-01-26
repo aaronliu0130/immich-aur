@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.124.2
+pkgver=1.125.2
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -19,7 +19,7 @@ makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
 #   so depend on python312. Cannot use python=3.12 since the AUR
 #   package does not contain a provides=.
 depends=('redis' 'postgresql' 'nodejs>=20' 'python312'
-    'pgvecto.rs=0.2.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
+    'pgvecto.rs<0.4.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
     'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
     'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
     'openexr' 'liblqr' 'libtool' 'jellyfin-ffmpeg'
@@ -43,7 +43,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('48907a1860847acc91e96fb76eb05900058af8823d9be2d631c38fdad69dbf42'
+sha256sums=('6aadae7bf400404410932bbe8f8456f3c1cc1eafe4696fed173f245f2bf36bd7'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -137,7 +137,7 @@ package_immich-server() {
     # 1.101.0-2: liborc dep found to be not required
     depends=('redis' 'postgresql' 'nodejs>=20'
         'python312'
-        'pgvecto.rs=0.2.0'  # aur
+        'pgvecto.rs<0.4.0'  # aur
         'zlib'
         'glib2'
         'expat'
