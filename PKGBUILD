@@ -3,13 +3,13 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.129.0
+pkgver=1.130.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
 arch=(x86_64)
 # ts-node required for CLI
-makedepends=('git' 'npm' 'jq' 'python-poetry' 'ts-node')
+makedepends=('git' 'npm' 'jq' 'uv' 'ts-node')
 
 # combination of server/CLI deps, see split package functions
 # for individual deps and commentary
@@ -43,7 +43,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('711b72a7d5bdf1d39028d6ab33d9d652bdfe3b413b9358948440dd61f49ed7e3'
+sha256sums=('dc116c2ca8d558c36e31e2e7b1c780c982cabc93d4dee56e1beae19cb1d8402e'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
@@ -106,20 +106,13 @@ build() {
     cd "${srcdir}/${pkgbase}-${pkgver}/machine-learning"
     sed -i 's|cache_folder: str = ".*"|cache_folder: str = "/var/lib/immich/.cache"|' app/config.py
     # pip install of poetry not required because poetry is a makedep
-    export PYTHONDONTWRITEBYTECODE=1
     export PYTHONUNBUFFERED=1
-    export PIP_NO_CACHE_DIR=true
-    poetry config installer.max-workers 10
-    poetry config virtualenvs.create false
-    python3.12 -m venv "${srcdir}/venv"
-    export VIRTUAL_ENV="${srcdir}/venv"
-    export PATH="${srcdir}/venv/bin:${PATH}"
-    poetry install --sync --no-interaction --no-ansi --no-root --with cpu --without dev
+    uv sync --frozen --extra cpu --no-dev --no-editable --no-progress --python 3.12 --no-managed-python
     # delete any python bytecode 
-    find "${srcdir}/venv" -type f -name "*.py[co]" -delete
-    find "${srcdir}/venv" -type d -name "__pycache__" -delete
+    find ".venv" -type f -name "*.py[co]" -delete
+    find ".venv" -type d -name "__pycache__" -delete
     # relocate without breaking
-    sed -i "s|${srcdir}/venv|${_venvdir}|g" "${srcdir}/venv/bin/"* "${srcdir}/venv/pyvenv.cfg"
+    sed -i "s|${srcdir}/${pkgbase}-${pkgver}/machine-learning/\.venv|${_venvdir}|g" ".venv/bin/"*
 
     # build CLI
     cd "${srcdir}/${pkgbase}-${pkgver}/cli"
@@ -207,7 +200,7 @@ package_immich-server() {
     # from: machine-learning/Dockerfile COPY commands
     #   * setting NODE_ENV=production and others picked up in systemd service file
     install -dm755 "${pkgdir}${_installdir}"
-    cp -r "${srcdir}/venv" "${pkgdir}${_installdir}"
+    cp -r "machine-learning/.venv" "${pkgdir}${_installdir}/venv"
     cp -r "machine-learning/app" "${pkgdir}${_installdir}"
     cp -r "machine-learning/ann" "${pkgdir}${_installdir}"
     install -Dm644 "machine-learning/log_conf.json" "${pkgdir}${_installdir}/log_conf.json"
