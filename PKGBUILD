@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
-pkgver=1.130.3
+pkgrel=2
+pkgver=1.131.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -43,10 +43,10 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('dc116c2ca8d558c36e31e2e7b1c780c982cabc93d4dee56e1beae19cb1d8402e'
+sha256sums=('3bd949520a978a8faf15c12003e24ba6279931522bdbd1b96b3e3d8c275ef3fe'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
-            '637e886cfb5a47834560b00158affe1e218a84e3f825d28d2640c10d2d597ef1'
+            '6e81b02943472ae3dab427b388cc1c43b7a42af82b1f0edd5e8b55114ff3db01'
             '01707746e8718fe169b729b7b3d9e26e870bf2dbc4d1f6cdc7ed7d3839e92c0e'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
             '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
@@ -104,7 +104,6 @@ build() {
     # from: ENV and RUN commands in machine-learning/Dockerfile
     #   * later ENV commands picked up in systemd service files
     cd "${srcdir}/${pkgbase}-${pkgver}/machine-learning"
-    sed -i 's|cache_folder: str = ".*"|cache_folder: str = "/var/lib/immich/.cache"|' app/config.py
     # pip install of poetry not required because poetry is a makedep
     export PYTHONUNBUFFERED=1
     uv sync --frozen --extra cpu --no-dev --no-editable --no-progress --python 3.12 --no-managed-python
@@ -201,9 +200,8 @@ package_immich-server() {
     #   * setting NODE_ENV=production and others picked up in systemd service file
     install -dm755 "${pkgdir}${_installdir}"
     cp -r "machine-learning/.venv" "${pkgdir}${_installdir}/venv"
-    cp -r "machine-learning/app" "${pkgdir}${_installdir}"
+    cp -r "machine-learning/immich_ml" "${pkgdir}${_installdir}"
     cp -r "machine-learning/ann" "${pkgdir}${_installdir}"
-    install -Dm644 "machine-learning/log_conf.json" "${pkgdir}${_installdir}/log_conf.json"
 
     cd "${srcdir}"
     
