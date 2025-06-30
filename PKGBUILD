@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.133.1
+pkgver=1.135.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -18,13 +18,44 @@ makedepends=('git' 'npm' 'jq' 'uv' 'ts-node')
 #   Current incompatibility with arch base version of python (3.13)
 #   so depend on python312. Cannot use python=3.12 since the AUR
 #   package does not contain a provides=.
-depends=('redis' 'postgresql' 'nodejs>=20' 'python312'
-    'pgvecto.rs<0.4.0' 'zlib' 'glib2' 'expat' 'librsvg' 'libexif'
-    'libwebp' 'libjpeg-turbo' 'libgsf' 'libpng'
-    'libheif' 'lcms2' 'mimalloc' 'openjpeg2'
-    'openexr' 'liblqr' 'libtool' 'jellyfin-ffmpeg'
-    'libvips>=8.14.3' 'openslide' 'poppler-glib' 'imagemagick'
-    'brotli' 'perl-io-compress-brotli' 'libraw' 'libde265' 'dav1d'
+# dependencies generated from base-images repository
+# https://github.com/immich-app/base-images/blob/main/server/Dockerfile
+# 1.101.0-2: liborc dep found to be not required
+depends=('redis' 'postgresql' 'nodejs>=20'
+    'python312'
+    'vectorchord' #>=0.3' 'vectorchord<0.5' version requirements will work when vectorchord-bin adds version to privdes # aur
+    'zlib'
+    'glib2'
+    'expat'
+    'librsvg'
+    'libexif'
+    'libwebp'
+    'libjpeg-turbo'
+    'libgsf'
+    'libpng'
+    'libheif'
+    'lcms2'
+    'mimalloc'
+    'openjpeg2'
+    'openexr'
+    'liblqr'
+    'libtool'
+    'jellyfin-ffmpeg'  # maintainer advice 28/10/24
+    # need to ensure this matches sharp depend version
+    # because otherwise a local copy will be built
+    # breaking heif conversion
+    'libvips>=8.14.3'
+    'openslide'
+    'poppler-glib'
+    'imagemagick'
+    'libraw'
+    # added v1.108
+    'libde265'
+    'dav1d'
+    # added v1.118
+    'brotli'
+    'perl-io-compress-brotli'
+    # added v1.120.2
     'highway'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
@@ -35,15 +66,15 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         "${pkgbase}.tmpfiles"
         'immich.conf'
         'nginx.immich.conf'
-        # TODO at the moment, the latest version at install will be taken 
-        # mirroring approach in docker base-image, however should we implement 
+        # TODO at the moment, the latest version at install will be taken
+        # mirroring approach in docker base-image, however should we implement
         # a simple service to keep these up-to-date since they appear to be
         # generated daily?
         'https://download.geonames.org/export/dump/cities500.zip'
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('1c1b9512f3f56f56b1e40af74db6d554de2b4639bfa7e341ce0f37dd95a036f4'
+sha256sums=('32e51678110c465e28bd08a06d2623d7f045c1d6b4351152709c5ac1e907fc39'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '6e81b02943472ae3dab427b388cc1c43b7a42af82b1f0edd5e8b55114ff3db01'
@@ -54,7 +85,7 @@ sha256sums=('1c1b9512f3f56f56b1e40af74db6d554de2b4639bfa7e341ce0f37dd95a036f4'
             'SKIP'
             'SKIP'
             'SKIP'
-            'SKIP')
+            '239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255')
 _installdir=/opt/immich-machine-learning
 _venvdir="${_installdir}/venv"
 
@@ -64,11 +95,9 @@ prepare() {
     imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | cut -d@ -f1)
     cd "${srcdir}/base-images"
     git checkout "$imgdate"
-    
 }
 
 build() {
- 
     # build server
     # from: server/Dockerfile RUN npm commands
     #   * npm link / and cache clean not required
@@ -102,10 +131,10 @@ build() {
     # from: ENV and RUN commands in machine-learning/Dockerfile
     #   * later ENV commands picked up in systemd service files
     cd "${srcdir}/${pkgbase}-${pkgver}/machine-learning"
-    # pip install of poetry not required because poetry is a makedep
+    # pip install of uv not required because uv is a makedep
     export PYTHONUNBUFFERED=1
     uv sync --frozen --extra cpu --no-dev --no-editable --no-progress --python 3.12 --no-managed-python
-    # delete any python bytecode 
+    # delete any uv bytecode
     find ".venv" -type f -name "*.py[co]" -delete
     find ".venv" -type d -name "__pycache__" -delete
     # relocate without breaking
@@ -118,50 +147,9 @@ build() {
 }
 
 package_immich-server() {
-
     replaces=('immich')
     conflicts=('immich')
 
-    # dependencies generated from base-images repository
-    # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
-    # 1.101.0-2: liborc dep found to be not required
-    depends=('redis' 'postgresql' 'nodejs>=20'
-        'python312'
-        'pgvecto.rs<0.4.0'  # aur
-        'zlib'
-        'glib2'
-        'expat'
-        'librsvg'
-        'libexif'
-        'libwebp'
-        'libjpeg-turbo'
-        'libgsf'
-        'libpng'
-        'libheif'
-        'lcms2'
-        'mimalloc'
-        'openjpeg2'
-        'openexr'
-        'liblqr'
-        'libtool'
-        'jellyfin-ffmpeg'  # maintainer advice 28/10/24
-        # need to ensure this matches sharp depend version
-        # because otherwise a local copy will be built
-        # breaking heif conversion
-        'libvips>=8.14.3'
-        'openslide'
-        'poppler-glib'
-        'imagemagick'
-        'libraw'
-        # added v1.108
-        'libde265'
-        'dav1d'
-        # added v1.118
-        'brotli'
-        'perl-io-compress-brotli'
-        # added v1.120.2
-        'highway'
-    )
     backup=("etc/immich.conf")
     options=("!strip")
     install=${pkgname}.install
@@ -175,7 +163,7 @@ package_immich-server() {
     )
 
     cd "${srcdir}/${pkgbase}-${pkgver}"
-    
+
     # install server
     # from: server/Dockerfile COPY commands after build
     #   * start*.sh not required
@@ -202,7 +190,7 @@ package_immich-server() {
     cp -r "machine-learning/ann" "${pkgdir}${_installdir}"
 
     cd "${srcdir}"
-    
+
     # install reverse-geocoding data
     # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
     install -dm755 "${pkgdir}/usr/lib/immich/build/geodata"
@@ -221,7 +209,7 @@ package_immich-server() {
     install -Dm644 immich.tmpfiles "${pkgdir}/usr/lib/tmpfiles.d/immich.conf"
     install -Dm644 immich.conf "${pkgdir}/etc/immich.conf"
     install -Dm644 nginx.immich.conf "${pkgdir}/usr/share/doc/immich/examples/nginx.conf"
-    
+
     # install lock file (from base-images)
     # TODO this lock file is used to determine versions for ffmpeg, libheif and others
     # it will not reflect the arch installed versions but only other option is to have
