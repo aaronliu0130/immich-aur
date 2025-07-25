@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.135.3
+pkgver=1.136.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('MIT')
@@ -21,7 +21,7 @@ makedepends=('git' 'npm' 'jq' 'uv' 'ts-node')
 # dependencies generated from base-images repository
 # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
 # 1.101.0-2: liborc dep found to be not required
-depends=('redis' 'postgresql' 'nodejs>=20'
+depends=('valkey' 'postgresql' 'nodejs>=20'
     'python312'
     'vectorchord' #>=0.3' 'vectorchord<0.5' version requirements will work when vectorchord-bin adds version to privdes # aur
     'zlib'
@@ -74,7 +74,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('32e51678110c465e28bd08a06d2623d7f045c1d6b4351152709c5ac1e907fc39'
+sha256sums=('ec448e54073e69aa1437b7a71cef417132bf2157a406663cc5b5806c91b49cfd'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '6e81b02943472ae3dab427b388cc1c43b7a42af82b1f0edd5e8b55114ff3db01'
@@ -151,8 +151,9 @@ package_immich-server() {
     conflicts=('immich')
 
     backup=("etc/immich.conf")
-    options=("!strip")
+    # options=("!strip")
     install=${pkgname}.install
+    changelog='BREAKING CHANGELOG.md'
     optdepends=(
         'libva-mesa-driver: GPU acceleration'
         'mesa-utils: GPU acceleration'
@@ -210,12 +211,17 @@ package_immich-server() {
     install -Dm644 immich.conf "${pkgdir}/etc/immich.conf"
     install -Dm644 nginx.immich.conf "${pkgdir}/usr/share/doc/immich/examples/nginx.conf"
 
-    # install lock file (from base-images)
+    # generate lock file (from base-images)
     # TODO this lock file is used to determine versions for ffmpeg, libheif and others
     # it will not reflect the arch installed versions but only other option is to have
     # it generated dynamically on server start - do we need to do this?
-    cd "${srcdir}/base-images"
-    install -Dm644 server/bin/build-lock.json "${pkgdir}/usr/lib/immich/build/build-lock.json"
+    cd "${srcdir}/base-images/server"
+    jq -s '.' packages/*.json > /tmp/packages.json
+    jq -s '.' sources/*.json > /tmp/sources.json
+    jq -n --slurpfile sources /tmp/sources.json --slurpfile packages /tmp/packages.json \
+    	'{sources: $sources[0], packages: $packages[0]}' \
+     	> "${pkgdir}/usr/lib/immich/build/build-lock.json" && \
+      	chmod 644 "${pkgdir}/usr/lib/immich/build/build-lock.json"
 }
 
 package_immich-cli() {
