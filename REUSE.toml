@@ -1,0 +1,37 @@
+version = 1
+
+[[annotations]]
+path = [
+    "BREAKING CHANGELOG.md",
+    "keys/**",
+    ".SRCINFO",
+    ".nvchecker.toml",
+    "*.install",
+    "*.sysusers",
+    "*.tmpfiles",
+    "*.logrotate",
+    "*.pam",
+    "*.service",
+    "*.socket",
+    "*.timer",
+    "*.desktop",
+    "*.hook",
+]
+SPDX-FileCopyrightText = "Arch Linux contributors"
+SPDX-License-Identifier = "0BSD"
+
+[[annotations]]
+path = [
+    "PKGBUILD",  # incorporates some upstream Dockerfile
+    "nginx.immich.conf"
+]
+SPDX-FileCopyrightText = ["immich contributors", 'Arch Linux contributors']
+SPDX-License-Identifier = "AGPL-3.0-only"
+
+[[annotations]]
+path = [
+    "immich.conf",
+    ".gitignore"
+]
+SPDX-FileCopyrightText = "Public domain"
+SPDX-License-Identifier = "PDDL-1.0"
