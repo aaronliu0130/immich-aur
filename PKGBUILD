@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.136.0
+pkgver=1.137.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('AGPL-3.0-only')
@@ -21,9 +21,9 @@ makedepends=('git' 'npm' 'jq' 'uv' 'ts-node')
 # dependencies generated from base-images repository
 # https://github.com/immich-app/base-images/blob/main/server/Dockerfile
 # 1.101.0-2: liborc dep found to be not required
-depends=('valkey' 'postgresql' 'nodejs>=20'
+depends=('valkey' 'postgresql>=14' 'nodejs>=20'
     'python312'
-    'vectorchord' #>=0.3' 'vectorchord<0.5' version requirements will work when vectorchord-bin adds version to privdes # aur
+    'vectorchord' #>=0.3' 'vectorchord<0.5'  # server/src/constants.ts
     'zlib'
     'glib2'
     'expat'
@@ -74,7 +74,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('ec448e54073e69aa1437b7a71cef417132bf2157a406663cc5b5806c91b49cfd'
+sha256sums=('cfe65a624b1a167168bbb012ef2672e6a43d63e9da1634de8b152569220cddb4'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '6e81b02943472ae3dab427b388cc1c43b7a42af82b1f0edd5e8b55114ff3db01'
