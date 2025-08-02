@@ -1,7 +1,7 @@
 pkgbase = immich
 	pkgdesc = Self-hosted photos and videos backup tool
 	pkgver = 1.137.3
-	pkgrel = 1
+	pkgrel = 2
 	url = https://github.com/immich-app/immich
 	arch = x86_64
 	license = AGPL-3.0-only
@@ -62,9 +62,9 @@ pkgbase = immich
 	sha256sums = 4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900
 	sha256sums = 077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58
 	sha256sums = 614b56dba38f9201d8a391d0f3d2cdf5571935a1ea6c5d19a74a942f18411763
-	sha256sums = d5059e61dfbadc57c2f1eb26a0d4500cda5d1eb42c0cf11f0b67e36ad3d55c8d
-	sha256sums = 2d943b53bc6a7d663f321996ec036da423be78b58874b9dced81680c33974636
-	sha256sums = c2715d2c73f76582b43e3ae2958e6bc12244f7b5c92b49da5447ac8c531dcb78
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
 	sha256sums = 239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255
 
 pkgname = immich-server

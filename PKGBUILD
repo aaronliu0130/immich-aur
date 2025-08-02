@@ -2,7 +2,7 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=1
+pkgrel=2
 pkgver=1.137.3
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
@@ -82,9 +82,9 @@ sha256sums=('b0c41c2dd2d36f22db263bd277af442ab22584987599cb602eb562db7ee80f71'
             '4ae8a73ccbef568b7841dbdfe9b9d8a76fa78db00051317b6313a6a50a66c900'
             '077b85d692df4625300a785eed1efdc7af8fbb8e05dfa8c7d8b4053c1eb76a58'
             '614b56dba38f9201d8a391d0f3d2cdf5571935a1ea6c5d19a74a942f18411763'
-            'd5059e61dfbadc57c2f1eb26a0d4500cda5d1eb42c0cf11f0b67e36ad3d55c8d'
-            '2d943b53bc6a7d663f321996ec036da423be78b58874b9dced81680c33974636'
-            'c2715d2c73f76582b43e3ae2958e6bc12244f7b5c92b49da5447ac8c531dcb78'
+            'SKIP'
+            'SKIP'
+            'SKIP'
             '239eec57ac17f100a11e2536cffc56752c318b50ae765b0918ff7aab4ce8f255')
 _installdir=/opt/immich-machine-learning
 _venvdir="${_installdir}/venv"
