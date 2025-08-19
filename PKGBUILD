@@ -2,8 +2,8 @@
 # Maintainer: pikl <me@pikl.uk>
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
-pkgrel=2
-pkgver=1.137.3
+pkgrel=1
+pkgver=1.138.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('AGPL-3.0-only')
@@ -23,7 +23,7 @@ makedepends=('git' 'npm' 'jq' 'uv' 'ts-node')
 # 1.101.0-2: liborc dep found to be not required
 depends=('valkey' 'postgresql>=14' 'nodejs>=20'
     'python312'
-    'vectorchord' #>=0.3' 'vectorchord<0.5'  # server/src/constants.ts
+    'vectorchord>=0.3' 'vectorchord<0.5'  # server/src/constants.ts
     'zlib'
     'glib2'
     'expat'
@@ -74,7 +74,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('b0c41c2dd2d36f22db263bd277af442ab22584987599cb602eb562db7ee80f71'
+sha256sums=('64477c5ad4c5cce2dd202935e818f5e302fbb04881356a3713c39f4185cd40d3'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             '6e81b02943472ae3dab427b388cc1c43b7a42af82b1f0edd5e8b55114ff3db01'
@@ -222,6 +222,9 @@ package_immich-server() {
     	'{sources: $sources[0], packages: $packages[0]}' \
      	> "${pkgdir}/usr/lib/immich/build/build-lock.json" && \
       	chmod 644 "${pkgdir}/usr/lib/immich/build/build-lock.json"
+
+    # install server management scripts; immich-admin doesn't work
+    install -Dm755 "${pkgdir}/usr/lib/immich/app/server/bin/immich-healthcheck" "${pkgdir}/usr/bin/immich-healthcheck"
 }
 
 package_immich-cli() {
