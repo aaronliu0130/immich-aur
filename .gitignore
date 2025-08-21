@@ -4,7 +4,4 @@ admin1CodesASCII.txt
 admin2Codes.txt
 cities500.zip
 base-images/
-src/
-pkg/
-*.pkg.tar.zst
-LICENSES/
+
