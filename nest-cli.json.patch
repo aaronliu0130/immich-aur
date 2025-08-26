@@ -1,0 +1,11 @@
+--- a/server/nest-cli.json
++++ b/server/nest-cli.json
+@@ -7,7 +7,7 @@
+     "webpack": false,
+     "plugins": [
+       {
+-        "name": "@nestjs/swagger",
++        "name": "@nestjs/swagger/plugin",
+         "options": {
+           "classValidatorShim": true,
+           "introspectComments": true
