@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.139.4
+pkgver=1.140.0
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('AGPL-3.0-only')
@@ -75,7 +75,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('15d01feb684ae3683da0c46df18392ff055f8e877acfe319d1b2e5f2423d64fc'
+sha256sums=('d24b42b23eb4e322cc9d47f642168b2302d2b40fb21d5e6664bec250ac28e6fe'
 			'39f874f7a53755a9a2302b70113c517066ded40952d1783df3623722f8721c44'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
@@ -93,8 +93,6 @@ _venvdir="${_installdir}/venv"
 
 prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
-    patch -p1 < "${srcdir}/nest-cli.json.patch"  # fixes server build for some reason
-
     imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | cut -d@ -f1)
 
     cd "${srcdir}/base-images"
@@ -106,8 +104,18 @@ build() {
 	cd "${srcdir}/${pkgbase}-${pkgver}"
     pnpm fetch
 
+	# build server
 	pnpm install --filter immich --frozen-lockfile --offline  # node-modules folders are missing without this
-    SHARP_IGNORE_GLOBAL_LIBVIPS=true pnpm --filter immich --frozen-lockfile build
+
+	## add a flag to pnpm --filter immich build to make swagger plugin work
+	## see https://docs.nestjs.com/openapi/cli-plugin#swc-builder
+	## (immich itself is a monorepo but immich-server isn't)
+	cd server
+    SHARP_IGNORE_GLOBAL_LIBVIPS=true pnpm exec nest build --type-check
+
+	cd -
+    pnpm --filter immich --frozen-lockfile build
+
     SHARP_FORCE_GLOBAL_LIBVIPS=true pnpm --filter immich --frozen-lockfile --prod --no-optional deploy output/server-pruned
 
 	# build sdk and web
