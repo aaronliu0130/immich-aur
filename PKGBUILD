@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.140.0
+pkgver=1.140.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('AGPL-3.0-only')
@@ -75,7 +75,7 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('d24b42b23eb4e322cc9d47f642168b2302d2b40fb21d5e6664bec250ac28e6fe'
+sha256sums=('0bce7814f3a4f6aa2ee8031df260846f6445b9707df131fc23de590ebf4d862f'
 			'39f874f7a53755a9a2302b70113c517066ded40952d1783df3623722f8721c44'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
@@ -102,6 +102,11 @@ prepare() {
 # instructions adapted from relevant Dockerfile-s
 build() {
 	cd "${srcdir}/${pkgbase}-${pkgver}"
+	make clean
+	for dir in machine-learning/.venv/ output/
+	do
+		if [ -d "$dir" ]; then rm -r "$dir"; fi
+	done
     pnpm fetch
 
 	# build server
