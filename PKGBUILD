@@ -3,7 +3,7 @@
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
-pkgver=1.140.1
+pkgver=1.141.1
 pkgdesc='Self-hosted photos and videos backup tool'
 url='https://github.com/immich-app/immich'
 license=('AGPL-3.0-only')
@@ -44,7 +44,7 @@ depends=('valkey' 'postgresql>=14' 'nodejs>=20'
     # need to ensure this matches sharp depend version
     # because otherwise a local copy will be built
     # breaking heif conversion
-    'libvips>=8.16.1'
+    'libvips>=8.17.1'
     'openslide'
     'poppler-glib'
     'imagemagick'
@@ -75,8 +75,8 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('0bce7814f3a4f6aa2ee8031df260846f6445b9707df131fc23de590ebf4d862f'
-			'39f874f7a53755a9a2302b70113c517066ded40952d1783df3623722f8721c44'
+sha256sums=('689cab83e0b24b01f620f6316ec5c65c566d95357285203319bc881ad2745a59'
+            '39f874f7a53755a9a2302b70113c517066ded40952d1783df3623722f8721c44'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             'ce6fae49e23d705b8d08205d981bb217eaf55347a499a8d0492b7ed95b520cff'
