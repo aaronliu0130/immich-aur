@@ -1,5 +1,7 @@
-# Maintainer: wabi <aschrafl@jetnet.ch>
-# Maintainer: pikl <me@pikl.uk>
+# Maintainer: aliu <aaronliu 0 1 3 0  gmail com>
+# Contributor: wabi <aschrafl@jetnet.ch>
+# Contributor: pikl <me@pikl.uk>
+# Contributor: caoticofanegas
 pkgbase=immich
 pkgname=('immich-server' 'immich-cli')
 pkgrel=1
@@ -59,7 +61,7 @@ depends=('valkey' 'postgresql>=14' 'nodejs>=20'
     'highway'
 )
 source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archive/refs/tags/v${pkgver}.tar.gz"
-		"nest-cli.json.patch"
+		"backup.service.ts.patch"
         "base-images::git+https://github.com/immich-app/base-images"
         "${pkgbase}-server.service"
         "${pkgbase}-machine-learning.service"
@@ -75,8 +77,8 @@ source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/immich-app/immich/archi
         'https://download.geonames.org/export/dump/admin1CodesASCII.txt'
         'https://download.geonames.org/export/dump/admin2Codes.txt'
         'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_10m_admin_0_countries.geojson')
-sha256sums=('689cab83e0b24b01f620f6316ec5c65c566d95357285203319bc881ad2745a59'
-            '39f874f7a53755a9a2302b70113c517066ded40952d1783df3623722f8721c44'
+sha256sums=('437c0caff1442ce3c57481df285b34a40e9449b530aea44d59e28d8afa76bfd5'
+            '00ae69ddab320aaf4e426f8372f22415c6486968f006fd12b9bd8cdeca8a8664'
             'SKIP'
             '48ba0c1716e4459322f878775bd37d9f8efe80b9c8a830bdb901ee4cba15a402'
             'ce6fae49e23d705b8d08205d981bb217eaf55347a499a8d0492b7ed95b520cff'
@@ -93,6 +95,7 @@ _venvdir="${_installdir}/venv"
 
 prepare() {
     cd "${srcdir}/${pkgbase}-${pkgver}"
+    patch -p1 < ${srcdir}/backup.service.ts.patch  # replace Debian's location of postgres with Arch's
     imgdate=$(grep ^'FROM ghcr.io/immich-app/base-server-prod' server/Dockerfile | cut -d: -f2 | cut -d@ -f1)
 
     cd "${srcdir}/base-images"
